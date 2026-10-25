@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 from app.core.set_scanner import scan_set
+from app.core.compatibility_report import build_compatibility_report
 
 
 class KorgManager:
@@ -40,6 +41,12 @@ class KorgManager:
         ttk.Button(
             buttons, text="Hap dosjen STYLE",
             command=self.open_styles,
+        ).pack(side="left", padx=5)
+
+        ttk.Button(
+            buttons,
+            text="Krahaso SET PA4X → PA3X",
+            command=self.compare_sets,
         ).pack(side="left", padx=5)
 
         self.status = ttk.Label(root, text="Zgjidh një dosje SET.")
@@ -139,6 +146,57 @@ class KorgManager:
 
         self.status.config(text="Raporti JSON u ruajt.")
         messagebox.showinfo("Sukses", "Raporti u eksportua me sukses.")
+
+
+    def compare_sets(self):
+        source_folder = filedialog.askdirectory(
+            title="Zgjidh SET-in burimor PA4X"
+        )
+        if not source_folder:
+            return
+
+        target_folder = filedialog.askdirectory(
+            title="Zgjidh SET-in objektiv PA3X"
+        )
+        if not target_folder:
+            return
+
+        try:
+            source_report = scan_set(source_folder)
+            target_report = scan_set(target_folder)
+            report = build_compatibility_report(
+                source_report, target_report
+            )
+        except (ValueError, OSError) as exc:
+            messagebox.showerror("Gabim gjatë krahasimit", str(exc))
+            return
+
+        self.report = report
+        self.output.delete("1.0", tk.END)
+        self.output.insert(tk.END, "RAPORTI I KRAHASIMIT PA4X → PA3X\\n")
+        self.output.insert(tk.END, f"BURIMI: {report['source_folder']}\\n")
+        self.output.insert(tk.END, f"OBJEKTIVI: {report['target_folder']}\\n\\n")
+
+        sections = [
+            ("DOSJE TË PËRBASHKËTA", "common_folders"),
+            ("DOSJE VETËM NË BURIM", "source_only_folders"),
+            ("DOSJE VETËM NË OBJEKTIV", "target_only_folders"),
+            ("STILE ME TË NJËJTIN EMËR", "common_style_names"),
+            ("STILE VETËM NË BURIM", "source_only_styles"),
+            ("STILE VETËM NË OBJEKTIV", "target_only_styles"),
+            ("SKEDARË VETËM NË BURIM", "source_only_files"),
+            ("SKEDARË VETËM NË OBJEKTIV", "target_only_files"),
+        ]
+
+        for title, key in sections:
+            items = report.get(key, [])
+            self.output.insert(tk.END, f"=== {title} ({len(items)}) ===\\n")
+            for item in items:
+                self.output.insert(tk.END, f"  {item}\\n")
+            self.output.insert(tk.END, "\\n")
+
+        self.output.insert(tk.END, "SHËNIM: " + report["note"] + "\\n")
+        self.status.config(text="Krahasimi përfundoi.")
 
 def main():
     root = tk.Tk()
