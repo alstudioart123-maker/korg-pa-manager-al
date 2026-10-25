@@ -43,6 +43,14 @@ def build_compatibility_report(source_report, target_report):
         "target_only_styles": sorted(target_styles - source_styles),
         "source_file_count": len(source_files),
         "target_file_count": len(target_files),
+        "source_category_counts": {
+            category: len(files)
+            for category, files in source_report.get("categories", {}).items()
+        },
+        "target_category_counts": {
+            category: len(files)
+            for category, files in target_report.get("categories", {}).items()
+        },
         "note": (
             "Ky raport krahason emrat dhe strukturën e skedarëve. "
             "Nuk verifikon përputhshmërinë e brendshme të formateve Korg "
