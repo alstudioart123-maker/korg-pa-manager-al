@@ -2,7 +2,7 @@ import json
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
-from core.set_scanner import scan_set
+from app.core.set_scanner import scan_set
 
 
 class KorgManager:
