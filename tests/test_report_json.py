@@ -32,6 +32,9 @@ class ReportJsonTests(unittest.TestCase):
 
         self.assertEqual(decoded["source_model"], "PA4X")
         self.assertEqual(decoded["target_model"], "PA3X")
+        self.assertEqual(decoded["source_folder"], "/source")
+        self.assertEqual(decoded["target_folder"], "/target")
+        self.assertIn("nuk konverton", decoded["note"])
         self.assertEqual(decoded["source_category_counts"]["PCM"], 1)
         self.assertEqual(decoded["target_category_counts"]["SOUND"], 1)
         self.assertIn("FAVORITE01.STY", decoded["common_style_names"])
