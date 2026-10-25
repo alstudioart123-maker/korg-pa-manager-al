@@ -180,6 +180,19 @@ class KorgManager:
         self.output.insert(tk.END, f"BURIMI: {report['source_folder']}\\n")
         self.output.insert(tk.END, f"OBJEKTIVI: {report['target_folder']}\\n\\n")
 
+        self.output.insert(tk.END, "=== NUMRI I SKEDARËVE SIPAS KATEGORISË ===\\n")
+        for category in sorted(
+            set(report.get("source_category_counts", {}))
+            | set(report.get("target_category_counts", {}))
+        ):
+            source_count = report.get("source_category_counts", {}).get(category, 0)
+            target_count = report.get("target_category_counts", {}).get(category, 0)
+            self.output.insert(
+                tk.END,
+                f"{category}: PA4X={source_count} | PA3X={target_count}\\n",
+            )
+        self.output.insert(tk.END, "\\n")
+
         sections = [
             ("DOSJE TË PËRBASHKËTA", "common_folders"),
             ("DOSJE VETËM NË BURIM", "source_only_folders"),
