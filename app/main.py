@@ -125,7 +125,10 @@ class KorgManager:
 
     def export_json(self):
         if self.report is None:
-            messagebox.showinfo("Informacion", "Analizo fillimisht një dosje SET.")
+            messagebox.showinfo(
+                "Informacion",
+                "Analizo një SET ose krahaso dy SET-e fillimisht."
+            )
             return
 
         filename = filedialog.asksaveasfilename(
